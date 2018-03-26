@@ -1,0 +1,10 @@
+(* Purpose: x座標とy座標の組で表された平面座標を二つ受け取ったらその中点の座標を返す *)
+(* chuten : (float * float) -> (float * float) -> (float * float) *)
+let chuten coords1 coords2 = match coords1 with (x1, y1) 
+                          -> match coords2 with (x2, y2) 
+                          -> ((x1 +. x2) /. 2.0, (y1 +. y2) /. 2.0)
+
+(* Test *)
+let test1 = chuten (1.0, 1.0) (-.1.0, 1.0) = (0.0, 1.0)
+let test2 = chuten (3.5, -.1.2) (2.1, 6.2) = (2.8, 2.5)
+let test3 = chuten (-.7.24, 4.89) (8.76, -.5.15) = (0.75, -.0.13) (* 小数点のブレで失敗する？ *)
