@@ -360,14 +360,11 @@ let test2 = romaji_to_kanji "toyosu"      global_ekimei_list = "豊洲"
 let test3 = romaji_to_kanji "minamisenju" global_ekimei_list = "南千住"
 let test4 = romaji_to_kanji "asakusa"     global_ekimei_list = "浅草"
 
-
 (* ----------------------------------------------------------------------- *)
 
-
-
 (* 10-11 *)
-(* purpose : 感じの駅名を二つと、駅間リストを受け取ったら二つの駅間の距離を返す *)
-(* get_ekikan_kyori : string -> string -> ekimei_t list -> float *)
+(* purpose : 漢字の駅名を二つと、駅間リストを受け取ったら二つの駅間の距離を返す *)
+(* get_ekikan_kyori : string -> string -> ekikan_t list -> float *)
 let rec get_ekikan_kyori e1 e2 lst = match lst with
   [] -> infinity
   | {kiten = kt; shuten = sh; kyori = k;}::rest ->
@@ -379,3 +376,28 @@ let rec get_ekikan_kyori e1 e2 lst = match lst with
 let test5 = get_ekikan_kyori "有楽町" "桜田門" global_ekikan_list = 1.0 
 let test6 = get_ekikan_kyori "虎ノ門" "溜池山王" global_ekikan_list = 0.6 
 let test7 = get_ekikan_kyori "南千住" "北千住" global_ekikan_list = 1.8
+let test7 = get_ekikan_kyori "前橋" "高崎" global_ekikan_list = infinity
+
+(* ----------------------------------------------------------------------- *)
+
+(* 10-12 *)
+(* purpose : ローマ字表記の駅名を二つ受け取ってその間の距離を返す *)
+(* kyori_wo_hyoji : string -> string -> ekimei_t list -> ekikan_list -> string *)
+
+(* 目的：ふたつの駅の間の距離を文字列で表現する *) 
+
+let kyori_wo_hyoji e1 e2 =
+  let eki1 = romaji_to_kanji e1 global_ekimei_list in
+  if eki1 = "" then e1 ^ "は存在しない駅名です"
+               else let eki2 = romaji_to_kanji e2 global_ekimei_list in
+                    if eki2 = "" then e2 ^ "は存在しない駅名です"
+                                 else let kyori = get_ekikan_kyori eki1 eki2 global_ekikan_list in
+                                 if kyori = infinity
+                                 then eki1 ^ "と" ^ eki2 ^ "間は直接繋がっていません"
+                                 else eki1 ^ "駅と" ^ eki2 ^ "間の距離は" ^ string_of_float kyori ^ "kmです"
+
+let test8  = kyori_wo_hyoji "shinjuku" "nishi-shinjuku" = "新宿駅と西新宿間の距離は0.8kmです"
+let test9  = kyori_wo_hyoji "shibuya" "tokyo" = "渋谷と東京間は直接繋がっていません"
+let test10 = kyori_wo_hyoji "yuurakutyou" "ginzaittyoume" = "有楽町駅と銀座一丁目間の距離は0.5kmです"
+let test11 = kyori_wo_hyoji "hoge" "shibuya" = "hogeは存在しない駅名です"
+let test12 = kyori_wo_hyoji "shibuya" "fuga" = "fugaは存在しない駅名です"
