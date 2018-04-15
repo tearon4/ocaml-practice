@@ -183,8 +183,7 @@ let global_ekimei_list = [
 {kanji="営団赤塚"; kana="えいだんあかつか"; romaji="eidanakakuka"; shozoku="有楽町線"}; 
 {kanji="営団成増"; kana="えいだんなります"; romaji="eidannarimasu"; shozoku="有楽町線"}; 
 {kanji="和光市"; kana="わこうし"; romaji="wakousi"; shozoku="有楽町線"}; 
-] 
-
+]
 
 let global_ekikan_list = [ 
 {kiten="代々木上原"; shuten="代々木公園"; keiyu="千代田線"; kyori=1.0; jikan=2}; 
@@ -348,3 +347,195 @@ let global_ekikan_list = [
 {kiten="営団赤塚"; shuten="営団成増"; keiyu="有楽町線"; kyori=1.5; jikan=2}; 
 {kiten="営団成増"; shuten="和光市"; keiyu="有楽町線"; kyori=2.1; jikan=3};
 ]
+
+let dummy_ekimei_t_list = [
+  {kanji="西日暮里"; kana="にしにっぽり"; romaji="nishinippori"; shozoku="千代田線"}; 
+  {kanji="北千住"; kana="きたせんじゅ"; romaji="kitasenjyu"; shozoku="千代田線"}; 
+  {kanji="池袋"; kana="いけぶくろ"; romaji="ikebukuro"; shozoku="丸ノ内線"}; 
+  {kanji="北千住"; kana="きたせんじゅ"; romaji="kitasenju"; shozoku="日比谷線"}; 
+  {kanji="東池袋"; kana="ひがしいけぶくろ"; romaji="higasiikebukuro"; shozoku="有楽町線"}; 
+  {kanji="池袋"; kana="いけぶくろ"; romaji="ikebukuro"; shozoku="有楽町線"}; 
+]
+
+let dummy_ekikan_t_list = [
+  {kiten="新木場"; shuten="辰巳"; keiyu="有楽町線"; kyori=1.5; jikan=2}; 
+  {kiten="辰巳"; shuten="豊洲"; keiyu="有楽町線"; kyori=1.7; jikan=2}; 
+  {kiten="豊洲"; shuten="月島"; keiyu="有楽町線"; kyori=1.4; jikan=2}; 
+  {kiten="月島"; shuten="新富町"; keiyu="有楽町線"; kyori=1.3; jikan=2}; 
+  {kiten="新富町"; shuten="銀座一丁目"; keiyu="有楽町線"; kyori=0.7; jikan=1}; 
+  {kiten="銀座一丁目"; shuten="有楽町"; keiyu="有楽町線"; kyori=0.5; jikan=1}; 
+  {kiten="有楽町"; shuten="桜田門"; keiyu="有楽町線"; kyori=1.0; jikan=1}; 
+  {kiten="桜田門"; shuten="永田町"; keiyu="有楽町線"; kyori=0.9; jikan=2}; 
+  {kiten="永田町"; shuten="麹町"; keiyu="有楽町線"; kyori=0.9; jikan=1}; 
+  {kiten="麹町"; shuten="市ヶ谷"; keiyu="有楽町線"; kyori=0.9; jikan=1}; 
+  {kiten="市ヶ谷"; shuten="飯田橋"; keiyu="有楽町線"; kyori=1.1; jikan=2}; 
+  {kiten="飯田橋"; shuten="江戸川橋"; keiyu="有楽町線"; kyori=1.6; jikan=3}; 
+  {kiten="江戸川橋"; shuten="護国寺"; keiyu="有楽町線"; kyori=1.3; jikan=2}; 
+  {kiten="護国寺"; shuten="東池袋"; keiyu="有楽町線"; kyori=1.1; jikan=2}; 
+  {kiten="東池袋"; shuten="池袋"; keiyu="有楽町線"; kyori=2.0; jikan=2}; 
+  {kiten="池袋"; shuten="要町"; keiyu="有楽町線"; kyori=1.2; jikan=2}; 
+  {kiten="要町"; shuten="千川"; keiyu="有楽町線"; kyori=1.0; jikan=1}; 
+  {kiten="千川"; shuten="小竹向原"; keiyu="有楽町線"; kyori=1.0; jikan=2}; 
+  {kiten="小竹向原"; shuten="氷川台"; keiyu="有楽町線"; kyori=1.5; jikan=2}; 
+  {kiten="氷川台"; shuten="平和台"; keiyu="有楽町線"; kyori=1.4; jikan=2}; 
+  {kiten="平和台"; shuten="営団赤塚"; keiyu="有楽町線"; kyori=1.8; jikan=2}; 
+  {kiten="営団赤塚"; shuten="営団成増"; keiyu="有楽町線"; kyori=1.5; jikan=2}; 
+  {kiten="営団成増"; shuten="和光市"; keiyu="有楽町線"; kyori=2.1; jikan=3};
+]
+
+(* ------------------ 12-1 ------------------ *)
+type eki_t = {
+  name : string;            (* 駅名 *)
+  min_kyori : float;        (* 最短距離 *)
+  temae_list : string list; (* 駅名リスト *)
+}
+(* 【メモ】 リストの型は要素の型を使って 'a list と書かれる *)
+
+(* ------------------ 12-2 ------------------ *)
+(* 目的: ekimei_t型のリストを受け取ったらその駅名を使ってeki_t型のリストを作る関数 *)
+(* make_eki_list : ekimei_t list -> eki_t list *)
+let rec make_eki_list lst = match lst with
+  [] -> []
+  | {kanji = kanji; kana = kana; romaji = romaji; shozoku = shozoku} :: rest ->
+    {name = kanji; min_kyori = infinity; temae_list = []} :: (make_eki_list rest)
+
+let test0 = make_eki_list [] = []
+let test1 = make_eki_list dummy_ekimei_t_list = [
+  {name="西日暮里"; min_kyori=infinity; temae_list = []}; 
+  {name="北千住"; min_kyori=infinity; temae_list = []}; 
+  {name="池袋"; min_kyori=infinity; temae_list = []}; 
+  {name="北千住"; min_kyori=infinity; temae_list = []}; 
+  {name="東池袋"; min_kyori=infinity; temae_list = []}; 
+  {name="池袋";min_kyori=infinity; temae_list = []}; 
+]
+
+(* ------------------ 12-3 ------------------ *)
+(* 目的: eki_t型のリスト(eki_t list)と起点を受け取ったら起点のみ初期化されたeki_t型のリストを返す *)
+(* shokika: ekimei_t list -> string -> ekimei_t list *)
+let rec shokika lst ktn = match lst with
+  [] -> []
+  | ({name = kanji; min_kyori = min_kyori; temae_list = temae_list} as first) :: rest ->
+    if ( kanji = ktn )
+      then {name = ktn; min_kyori = 0.0; temae_list =ktn::[]} :: (shokika rest ktn)
+      else first :: (shokika rest ktn)
+
+let test2 = shokika [] "hoge" = []
+let test3 = shokika (make_eki_list dummy_ekimei_t_list) "北千住" = [
+  {name="西日暮里"; min_kyori=infinity; temae_list = []}; 
+  {name="北千住"; min_kyori=0.0; temae_list = ["北千住"]}; 
+  {name="池袋"; min_kyori=infinity; temae_list = []}; 
+  {name="北千住"; min_kyori=0.0; temae_list = ["北千住"]}; 
+  {name="東池袋"; min_kyori=infinity; temae_list = []}; 
+  {name="池袋";min_kyori=infinity; temae_list = []};
+]
+
+(* ------------------ 12-4 ------------------ *)
+(* 目的: あらかじめ昇順に並んでいるekimei_t型データを持つリスト lst と, *)
+(* ekimei_t型データ1つ n を受け取って n を含めた昇順のekimei_t型データリストを返す *)
+(* insert : int list -> int -> int list *)
+let rec insert lst n = match lst with
+  [] -> n::[]
+  | ({kana = kana;} as first) :: rest ->
+    match n with
+      {kana = kana_n;} ->
+      if ( kana = kana_n )
+        then insert rest n
+        else if ( kana < kana_n )
+          then first :: (insert rest n)
+          else n :: lst
+
+(* 目的: ekimei_t型のリストを受け取ったらひらがな順にソートして重複している駅を取り除いたekimei_t型のリストを返す *)
+(* seiretsu: ekimei_t list -> ekimei_t list *)
+let rec seiretsu lst = match lst with
+  [] -> []
+  | first :: rest -> insert (seiretsu rest) first
+
+let test4 = seiretsu [] = [] 
+let test5 = seiretsu dummy_ekimei_t_list = [ 
+  {kanji = "池袋"; kana = "いけぶくろ"; romaji = "ikebukuro";shozoku = "丸ノ内線"};
+  {kanji = "北千住"; kana = "きたせんじゅ"; romaji = "kitasenjyu";shozoku = "千代田線"};
+  {kanji = "西日暮里"; kana = "にしにっぽり";romaji = "nishinippori"; shozoku = "千代田線"};
+  {kanji = "東池袋"; kana = "ひがしいけぶくろ";romaji = "higasiikebukuro"; shozoku = "有楽町線"}
+]
+
+(* ------------------ 13-6 ------------------ *)
+(* calc_distance : 駅名Aと駅名Bとekikan_t型のリストを受け取って
+それぞれの駅が繋がっている(起点・終点にある)場合はそのレコードを含むリストを、ない場合は空のリストを返す *)
+let rec calc_distance eki1 eki2 ekikan_lst = match ekikan_lst with
+  [] -> infinity
+  | {kiten = k; shuten = s; kyori = d}::rest ->
+  if (eki1 = k && eki2 = s) || (eki2 = k && eki1 = s)
+  then d
+  else calc_distance eki1 eki2 rest
+
+(* koushin1 : 直前に確定した駅pと未確定の駅qを受け取ってp-q間が
+つながっていればqの最短距離と手前リストを必要に応じて更新したものを,
+つながっていなければqをそのまま返す *)
+let koushin1 p q global_ekikan_list =
+  match (p, q) with
+    ({name = p_name; min_kyori = p_min; temae_list = p_lst},
+      {name = q_name; min_kyori = q_min; temae_list = q_lst}) ->
+      let d = calc_distance p_name q_name global_ekikan_list in
+        if d = infinity then q
+        else let p_keiyu_q_kyori = d +. p_min in
+          if p_keiyu_q_kyori < q_min
+          then {name = q_name; min_kyori = p_keiyu_q_kyori; temae_list = q_name::p_lst}
+          else q
+
+(* koushin : 直前に確定した駅pと未確定の駅リストvを受け取って
+必要な更新を行った後の未確定の駅リストを返す *)
+let koushin p v =
+  let f q = koushin1 p q in
+  List.map f v
+
+
+(* ------------------ 14.7 ------------------ *)
+let koushin_ex p v =
+  let koushin1_ex p q global_ekikan_list =
+    match (p, q) with
+      ({name = p_name; min_kyori = p_min; temae_list = p_lst},
+        {name = q_name; min_kyori = q_min; temae_list = q_lst}) ->
+        let d = calc_distance p_name q_name global_ekikan_list in
+          if d = infinity then q
+          else let p_keiyu_q_kyori = d +. p_min in
+            if p_keiyu_q_kyori < q_min
+            then {name = q_name; min_kyori = p_keiyu_q_kyori; temae_list = q_name::p_lst}
+            else q in
+  let f q = koushin1_ex p q in
+  List.map f v
+
+(* ------------------ 14-11 ------------------ *)
+let make_eki_list lst =
+  List.map (fun ekimei -> match ekimei with
+    {kanji = kanji;} ->
+      {name = kanji; min_kyori = infinity; temae_list = []}) lst
+
+let rec shokika lst ktn =
+  List.map (fun ekimei -> match ekimei with
+    {name = kanji;} ->
+    if ( kanji = ktn )
+      then {name = kanji; min_kyori = 0.0; temae_list = ktn::[]} else ekimei) lst
+
+(* ------------------ 14-12 ------------------ *)
+let make_initial_eki_list lst ktn =
+  List.map (fun ekimei -> match ekimei with 
+       {kanji = kanji;} ->
+         if ( kanji = ktn )
+         then {name = kanji; min_kyori = 0.; temae_list = ktn::[]} 
+         else {name = kanji; min_kyori = infinity; temae_list = []}) lst
+(* memo: この関数は上の14-11の２つの関数を合成した形になっている *)
+
+(* ------------------ 14-13 ------------------ *)
+let koushin p v =
+  List.map (fun q -> match (p, q) with
+    ({name = p_name; min_kyori = p_min; temae_list = p_lst},
+     {name = q_name; min_kyori = q_min; temae_list = q_lst}) ->
+    let d = calc_distance p_name q_name global_ekikan_list in
+      if d = infinity
+      then q
+      else
+        let p_keiyu_q_kyori = d +. p_min in
+        if p_keiyu_q_kyori < q_min
+          then {name = q_name; min_kyori = p_keiyu_q_kyori; temae_list = q_name :: p_lst}
+          else q)
+  v
